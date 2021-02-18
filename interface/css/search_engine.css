@@ -164,80 +164,6 @@ tbody .column2:hover {
     display: none;
 }
 
-.dropdown-menu {
-    font-size: 16px;
-    margin-right: 60px;
-    width: 110px;
-    position: absolute;
-    background-color: #f1f1f1;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    right: 0;
-    z-index: 3;
-}
-
-.dropdown-menu a {
-    color: black;
-    padding: 6px 0;
-    text-decoration: none;
-    display: block;
-    font-size: 15px;
-    font-weight: bold;
-    font-family: Arial, Helvetica, sans-serif;
-    border-bottom: 1px solid black;
-}
-
-.dropdown-menu a:hover {
-    background-color: #ddd;
-}
-
-#drop_file_zone {
-    background-color: rgba(173, 216, 230, 0.2);
-    border: rgb(0, 0, 0) 4px dashed;
-    width: 500px;
-    height: 200px;
-    padding: 8px;
-    font-size: 18px;
-    margin: auto;
-    border-radius: 5px;
-}
-
-#choose_file_btn {
-    cursor: pointer;
-    background: none;
-    background-color: white;
-    border: 1px solid #36304a;
-    border-radius: 5px;
-    font-size: 20px;
-}
-
-#choose_file_btn:hover {
-    text-decoration: underline;
-}
-
-#choose_file_btn:active {
-    transform: translateY(2px);
-}
-
-#drag_upload_file {
-    width: 50%;
-    margin: 0 auto;
-}
-
-#drag_upload_file p {
-    text-align: center;
-    font-size: 20px;
-}
-
-#drag_upload_file #selectfile {
-    display: none;
-}
-
-td.column5 {
-    padding: 0;
-    text-align: center;
-}
-
-
 form.search input[type=text] {
     padding: 10px;
     font-size: 17px;
@@ -246,10 +172,10 @@ form.search input[type=text] {
     background: #f1f1f1;
     margin-left: 20%;
     margin-top: 100px;
-  }
+}
   
   /* Style the submit button */
-  form.search button {
+form.search button {
     width: 20%;
     padding: 10px;
     background: #2196F3;
@@ -258,19 +184,19 @@ form.search input[type=text] {
     border: 1px solid grey;
     border-left: none; /* Prevent double borders */
     cursor: pointer;
-  }
+}
   
-  form.search button:hover {
-    background: #0b7dda;
-  }
+form.search button:hover {
+   background: #0b7dda;
+}
   
-  /* Clear floats */
-  form.search::after {
+ /* Clear floats */
+form.search::after {
     content: "";
     clear: both;
     display: table;
-  }
+}
 
-  .search_box {
+.search_box {
       width: 50%;
-  }
+}

@@ -12,3 +12,11 @@ var tableToExcel = (function() {
         link.click();
     }
   })()
+
+function openPdf(path) {
+    //   el = document.createElement("a");
+    elements = path.split('/')
+    folder = elements[elements.length - 2]
+    file = elements[elements.length - 1]
+    window.open("/Data/" + folder + "/" + file, '_blank', 'fullscreen=yes');
+}
