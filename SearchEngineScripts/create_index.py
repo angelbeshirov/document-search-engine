@@ -45,6 +45,20 @@ def main():
     df = extractPdfFilesDocumentwise(files)
     es = Elasticsearch()
 
+    es.indices.create('library_index', body = {
+        "settings": {
+            "number_of_shards": 1
+        },
+        "mappings": {
+            "properties": {
+                "content": {
+                    "type": "text",
+                    "index_options": "offsets"
+                }
+            }
+        }
+    })
+
     column_names = df.columns
     for row in range(df.shape[0]):
         body = dict([(name, str(df.iloc[row][name])) for name in column_names])
