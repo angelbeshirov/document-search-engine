@@ -18,12 +18,8 @@ body {
     background-image: linear-gradient(#f5f7fa, #c3cfe2);
 }
 
-#files-container {
-    width: 100%;
-}
-
 .table-container {
-    width: 60%;
+    width: 75%;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
@@ -98,12 +94,6 @@ tbody tr {
     line-height: 1.2;
     font-weight: unset;
 }
-/* 
-tbody tr:hover {
-    color: #555555;
-    background-color: #9c9b9b;
-    cursor: pointer;
-} */
 
 tbody .column1:hover {
     color: #555555;
@@ -119,23 +109,17 @@ tbody .column2:hover {
 
 .column1 {
     width: 50%;
-    padding-left: 40px;
+    border: 1px solid black;
+    white-space: normal;
+    /* display: inline-block */
+    /* padding-left: 1%; */
 }
 
 .column2 {
-    width: 200px;
-}
-
-.column3 {
-    width: 200px;
-}
-
-.column4 {
-    width: 250px;
-}
-
-.column5 {
-    width: 170px;
+    width: 50%;
+    border: 1px solid black;
+    white-space: normal;
+    /* display: inline-block; */
 }
 
 .button {
@@ -161,21 +145,6 @@ tbody .column2:hover {
 
 
 /* buttons */
-
-.btn-blue {
-    border-color: #326E99;
-    background-color: #3F8ABF;
-    margin-bottom: 20px;
-    margin-right: 40px;
-}
-
-.btn-blue:hover,
-.btn-blue:focus,
-.btn-blue:active {
-    background-color: #397CAC;
-    border-color: #326E99;
-}
-
 .header {
     margin-top: 50px;
 }
@@ -269,18 +238,18 @@ td.column5 {
 }
 
 
-form.example input[type=text] {
+form.search input[type=text] {
     padding: 10px;
     font-size: 17px;
     border: 1px solid grey;
-    width: 50%;
+    width: 40%;
     background: #f1f1f1;
-    margin-left: 15%;
+    margin-left: 20%;
     margin-top: 100px;
   }
   
   /* Style the submit button */
-  form.example button {
+  form.search button {
     width: 20%;
     padding: 10px;
     background: #2196F3;
@@ -291,12 +260,12 @@ form.example input[type=text] {
     cursor: pointer;
   }
   
-  form.example button:hover {
+  form.search button:hover {
     background: #0b7dda;
   }
   
   /* Clear floats */
-  form.example::after {
+  form.search::after {
     content: "";
     clear: both;
     display: table;
