@@ -7,7 +7,22 @@ import codecs
 from fpdf import FPDF
 import pycpdf
 import argparse
+import regex as re
 
+def clearHyphens(file):
+    # по- красив -> по-красив
+    file = re.sub('(по-)([\s]*[\r\n]*)([а-яА-Я])', '\\1\\3', file)
+    # най- красив -> най-красив
+    file = re.sub('(най-)([\s]*[\r\n]*)([а-яА-Я])', '\\1\\3', file)
+    # стру- ва -> струва
+    return re.sub('([а-яА-Я])(-[\s]+)([а-яА-Я])', '\\1\\3', file)
+
+def clean(file):
+    # изтриване на част от страниците
+    file = re.sub('-[\s][0-9]+[\s]-[\s]*', '', file)
+    file = clearHyphens(file)
+    return file
+    
 def extractPdfFilesDocumentwise(files):
     loc = 1
     df = pd.DataFrame(columns = ("path", "content"))
@@ -24,6 +39,8 @@ def extractPdfFilesDocumentwise(files):
             pageObj = pdfReader.pages[i]
             this_text = pageObj.text.translate(pycpdf.unicode_translations)
             this_doc += this_text
+        
+        this_doc = clean(this_doc)
         df.loc[loc] = os.path.abspath(file), this_doc
         loc = loc + 1
         
