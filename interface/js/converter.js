@@ -50,29 +50,29 @@ function includes(arr, val){
  */
 function checkEnding(i, currentWord, lastChar, isUpperCase){
 		if(includes(cons,lastChar)){
-			if(includes(abbreviations, currentWord)){
+			if (includes(abbreviations, currentWord)) {
 				return false;
 			}
-			if(includes(softEndingWords,currentWord) || includes(softExclusions,currentWord)){
-				if(isUpperCase){
+			if (includes(softEndingWords,currentWord) || includes(softExclusions,currentWord)) {
+				if (isUpperCase) {
 					words[i] += "Ь";
-				}else{
+				} else {
 					words[i] += "ь";
 				}			
 				return true;
 			}
-			if(currentWord.substr(currentWord.length-2) == "ят" || currentWord.substr(currentWord.length-2) == "ът"){
+			if (currentWord.substr(currentWord.length-2) == "ят" || currentWord.substr(currentWord.length-2) == "ът"){
 				if(includes(softExclusions,(currentWord.substr(0,currentWord.length-2)))){
-						if(isUpperCase){
+						if (isUpperCase) {
 							words[i] = words[i].substr(0,currentWord.length-2) + "ЬТ";
-						}else{
+						} else {
 							words[i] = words[i].substr(0,currentWord.length-2) + "ьт";
 						}
 					}
 				}
-			if(isUpperCase){
+			if (isUpperCase) {
 				words[i] += "Ъ" ;
-			}else{
+			} else {
 				words[i] += "ъ" ;
 			}
 			
@@ -87,19 +87,19 @@ function checkEnding(i, currentWord, lastChar, isUpperCase){
 function checkUs(i, currentWord, isUpperCase){
 	for (k=0; k<usLen; k++){
 		var usIndex = currentWord.indexOf(usRoots[k]);
-		if(usIndex != -1){
-			if(isUpperCase){
+		if (usIndex != -1) {
+			if (isUpperCase) {
 				words[i] = words[i].substr(0,usIndex) + words[i].substr(usIndex).replace("Ъ","Ѫ");
-			}else{
+			} else {
 				words[i] = words[i].substr(0,usIndex) + words[i].substr(usIndex).replace("ъ","ѫ");
 			}
 			return true;
 		}
 	}
 	if(currentWord == "са"){
-		if(isUpperCase){
+		if (isUpperCase) {
 			words[i] = words[i].replace("А","Ѫ");
-		}else{
+		} else {
 			words[i] = words[i].replace("а","ѫ");
 			
 		}
@@ -114,34 +114,34 @@ function checkUs(i, currentWord, isUpperCase){
 function checkYat(i, currentWord, isUpperCase){
 	var returnValue = false;
 	if(currentWord.substr(currentWord.length-2) == "те"){
-		if(isUpperCase){
+		if (isUpperCase) {
 			words[i] = words[i].substr(0,currentWord.length-1) + "Ѣ";
-		}else{
+		} else {
 			words[i] = words[i].substr(0,currentWord.length-1) + "ѣ";
 		}
 		returnValue = true;
-	}else if(currentWord.substr(0,3) == "пре"){
-		if(isUpperCase){
+	} else if (currentWord.substr(0,3) == "пре") {
+		if (isUpperCase) {
 			words[i] = words[i].replace("Е","Ѣ");
-		}else{
+		} else {
 			words[i] = words[i].replace("е","ѣ");
 		}
 		returnValue = true;
 	}
 	for (k=0; k<yatLen; k++){
 		var yatIndex = currentWord.search(yatRoots[k]);
-		if(yatIndex != -1){
-			if(isUpperCase){
-				if(k<209){
+		if (yatIndex != -1){
+			if (isUpperCase) {
+				if (k<209) {
 					words[i] = words[i].substr(0,yatIndex) + words[i].substr(yatIndex).replace("Е","Ѣ");
-				}else{
+				} else {
 					words[i] = words[i].substr(0,yatIndex) + words[i].substr(yatIndex).replace("Я","Ѣ");
 				}
 				
-			}else{
-				if(k<209){
+			} else {
+				if (k<209) {
 					words[i] = words[i].substr(0,yatIndex) + words[i].substr(yatIndex).replace("е","ѣ");
-				}else{
+				} else {
 					words[i] = words[i].substr(0,yatIndex) + words[i].substr(yatIndex).replace("я","ѣ");
 				}
 				
@@ -151,9 +151,9 @@ function checkYat(i, currentWord, isUpperCase){
 	}
 	if(currentWord == "де" ){
 		
-		if(isUpperCase){
+		if (isUpperCase){
 			words[i] = words[i].charAt(0) + "Ѣ";
-		}else{
+		} else {
 			words[i] = words[i].charAt(0) + "ѣ";
 		}
 		
@@ -167,9 +167,9 @@ function checkYat(i, currentWord, isUpperCase){
  */
 function checkVS(i,currentWord,isUpperCase){
 	if(currentWord == "във" || currentWord == "със"){
-		if(isUpperCase){
+		if (isUpperCase) {
 			words[i] = words[i].charAt(0) + "Ъ ";
-		}else{
+		} else {
 			words[i] = words[i].charAt(0) + "ъ ";
 		}
 		return true;
@@ -182,9 +182,9 @@ function checkVS(i,currentWord,isUpperCase){
  */
 function checkFemaleThe(i, currentWord, isUpperCase){
 	if(currentWord.substr(currentWord.length-3) == "тта" || currentWord.substr(currentWord.length-3) == "щта" ){
-		if(isUpperCase){
+		if (isUpperCase) {
 			words[i] = words[i].substr(0,currentWord.length-2) + "Ь" + words[i].substr(currentWord.length-2);
-		}else{
+		} else {
 			words[i] = words[i].substr(0,currentWord.length-2) + "ь" + words[i].substr(currentWord.length-2);
 		}
 		return true;
@@ -199,9 +199,9 @@ function checkExclusionWords1(i, currentWord, isUpperCase){
 	for (k=0; k<exLen1; k++){
 		var exIndex = currentWord.indexOf(exclusionWords1[k]);
 		if(exIndex != -1){
-			if(isUpperCase){
+			if (isUpperCase){
 				words[i] = words[i].replace(exclusionWords1[k],correctedExclusionWords[k].toUpperCase());
-			}else{
+			} else {
 				words[i] = words[i].replace(exclusionWords1[k],correctedExclusionWords[k]);
 			}
 			return true;
@@ -217,9 +217,9 @@ function checkExclusionWords2(i, currentWord, isUpperCase){
 	for (k=0; k<exLen2; k++){
 		var exIndex = currentWord.indexOf(exclusionWords2[k]);
 		if(exIndex != -1){
-			if(isUpperCase){
+			if (isUpperCase){
 				words[i] = words[i].replace(exclusionWords2[k],correctedExclusionWords[k+exLen1].toUpperCase());
-			}else{
+			} else{
 				words[i] = words[i].replace(exclusionWords2[k],correctedExclusionWords[k+exLen1]);
 			}
 			return true;
@@ -252,25 +252,25 @@ function checkWord(){
 		hasChanged6 = checkExclusionWords1(i, currentWord, isUpperCase);
 		hasChanged7 = checkExclusionWords2(i, currentWord, isUpperCase);
 		
-		if(hasChanged4){
+		if (hasChanged4){
 			var c = new RegExp(currentWord,"i");
 			var index =siteBody.search(temp)+ siteBody.substr(siteBody.search(temp)).search(c);
 			if(index > -1){
 				siteBody = siteBody.substr(0, index)+ words[i] + siteBody.substr(index + words[i].length);
 			}
-		}else if(hasChanged1 && hasChanged6){
+		} else if(hasChanged1 && hasChanged6){
 			var c = new RegExp(currentWord,"i");
 			var index =siteBody.search(temp)+ siteBody.substr(siteBody.search(temp)).search(c);
 			if(index > -1){
 				siteBody = siteBody.substr(0, index)+ words[i] + siteBody.substr(index + words[i].length-2);
 			}
-		}else if(hasChanged1 || hasChanged5 || hasChanged6){
+		} else if(hasChanged1 || hasChanged5 || hasChanged6){
 			var c = new RegExp(currentWord,"i");
 			var index =siteBody.search(temp)+ siteBody.substr(siteBody.search(temp)).search(c);
 			if(index > -1){
 				siteBody = siteBody.substr(0, index)+ words[i] + siteBody.substr(index + words[i].length-1);
 			}
-		}else if(hasChanged2 || hasChanged3 || hasChanged7){
+		} else if(hasChanged2 || hasChanged3 || hasChanged7){
 			var c = new RegExp(currentWord,"i");
 			var index =siteBody.search(temp)+ siteBody.substr(siteBody.search(temp)).search(c);
 			if(index > -1){
@@ -283,10 +283,10 @@ function checkWord(){
 
 function convert(text){
     var result = text
-	try{
+	try {
 		setupVariables(text);
 		checkWord();
-	} finally{
+	} finally {
 		result = siteBody;
     }
     

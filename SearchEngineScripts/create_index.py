@@ -47,19 +47,6 @@ def extractPdfFilesDocumentwise(files):
     return df
 
 def main():
-    # parameters used for starting this class from shell scripts and executing different flows with different paremeters
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-p", "--path", type=str, default=".", help="Path to the directory with the files to index.")
-    args = parser.parse_args()
-
-    path = args.path
-    os.chdir(path)
-    files = glob.glob("*.*")
-
-    for file in files:
-        print(os.path.abspath(file))
-
-    df = extractPdfFilesDocumentwise(files)
     es = Elasticsearch()
 
     es.indices.create('library_index', body = {
@@ -76,10 +63,7 @@ def main():
         }
     })
 
-    column_names = df.columns
-    for row in range(df.shape[0]):
-        body = dict([(name, str(df.iloc[row][name])) for name in column_names])
-        es.index(index = 'library_index', body = body)
+    print("Index created successfully.")
 
 if __name__ == '__main__':
     main()
