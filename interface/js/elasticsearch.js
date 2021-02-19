@@ -101,14 +101,14 @@ function populateOld(results) {
 
 function createTD(path, snippet, classes) {
     var col = document.createElement("td");
-    col.innerHTML = "<div class=\"file-path\"> <b>Файл: </b>" + path + "</div> <div>" + (snippet != null ? "<b>Откъс: </b>" + snippet : "") + "</div>";
+    col.innerHTML = "<div class=\"file-path\"> <b>Файл: </b>" + path + "</div> <br> <div>" + (snippet != null ? "<b>Откъс: </b>" + snippet : "") + "</div>";
     for (var i = 0; i < classes.length; i++) {
         col.classList.add(classes[i]);
     }
 
     col.addEventListener("click", function() {
         var path = this.childNodes[0].childNodes[2].data
-        openPdf(path)
+        // openPdf(path)
     });
 
     return col;
