@@ -9,7 +9,11 @@ import pycpdf
 import argparse
 import regex as re
 
-def clearHyphens(file):
+def clear_hyphens(file):
+    """
+    Clear all hyphens which are a result from word
+    separation on 2 different lines.
+    """
     # по- красив -> по-красив
     file = re.sub('(по-)([\s]*[\r\n]*)([а-яА-Я])', '\\1\\3', file)
     # най- красив -> най-красив
@@ -18,33 +22,55 @@ def clearHyphens(file):
     return re.sub('([а-яА-Я])(-[\s]+)([а-яА-Я])', '\\1\\3', file)
 
 def clean(file):
+    """
+    Clear up the pages.
+    """
     # изтриване на част от страниците
     file = re.sub('-[\s][0-9]+[\s]-[\s]*', '', file)
-    file = clearHyphens(file)
+    file = clear_hyphens(file)
     return file
     
-def extractPdfFilesDocumentwise(files):
-    loc = 1
-    df = pd.DataFrame(columns = ("path", "content"))
+def extract_and_index(files):
+    """
+    Extracts the contentes of the pdf files, clears it up
+    and passes it to Elastic for indexing.
+    """
+    es = Elasticsearch()
     
     for file in files:
-        print("Extracting document {}".format(loc))
-        pdfFileObj = open(file, "rb")
-        pdfReader = pycpdf.PDF(pdfFileObj.read())
+        print("Indexing document {}".format(file))
+        pdf_file_object = open(file, "rb")
+        pdf_reader = pycpdf.PDF(pdf_file_object.read())
         
-        n_pages = len(pdfReader.pages)
+        n_pages = len(pdf_reader.pages)
         
-        this_doc = ''
+        document_content = ''
         for i in range(n_pages):
-            pageObj = pdfReader.pages[i]
-            this_text = pageObj.text.translate(pycpdf.unicode_translations)
-            this_doc += this_text
+            page_object = pdf_reader.pages[i]
+            this_text = page_object.text.translate(pycpdf.unicode_translations)
+            document_content += this_text
         
-        this_doc = clean(this_doc)
-        df.loc[loc] = os.path.abspath(file), this_doc
-        loc = loc + 1
-        
-    return df
+        document_content = clean(document_content)
+
+        body = {}
+        body["path"] = os.path.abspath(file)
+        body["content"] = document_content
+
+        es.index(index = 'library_index', body = body)
+
+def get_files_to_index(root_path):
+    """
+    Recursively traverses root_path directory 
+    to find all files with pdf extension and returns
+    them as array for indexing.
+    """
+    files_to_index = []
+    for root, dirs, files in os.walk(root_path):
+        for file in files:
+            if file.endswith(".pdf"):
+                files_to_index.append((os.path.join(root, file)))
+
+    return files_to_index
 
 def main():
     # parameters used for starting this class from shell scripts and executing different flows with different paremeters
@@ -53,19 +79,12 @@ def main():
     args = parser.parse_args()
 
     path = args.path
-    os.chdir(path)
-    files = glob.glob("*.*")
+    files = get_files_to_index(path)
 
     for file in files:
         print(os.path.abspath(file))
 
-    df = extractPdfFilesDocumentwise(files)
-    es = Elasticsearch()
-
-    column_names = df.columns
-    for row in range(df.shape[0]):
-        body = dict([(name, str(df.iloc[row][name])) for name in column_names])
-        es.index(index = 'library_index', body = body)
-
+    extract_and_index(files)
+    
 if __name__ == '__main__':
     main()
