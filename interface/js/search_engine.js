@@ -28,7 +28,11 @@ window.onload = function() {
         selected_search_type = 1
     });
 
-    document.getElementById("export-btn").addEventListener("click", function() {
+    document.getElementById("export-excel-btn").addEventListener("click", function() {
+        tableToExcel("main-table", "results")
+    });
+    
+    document.getElementById("export-pdf-btn").addEventListener("click", function() {
         tableToExcel("main-table", "results")
     });
 };

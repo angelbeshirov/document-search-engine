@@ -22,7 +22,15 @@
 
 <body id="gradient">
 	<div class="navbar">
-	<a id = "export-btn" href="#">Експортиране</a>
+		<div class="dropdown">
+		<button class="dropbtn">Вид експортиране
+			<i class="fa fa-caret-down"></i>
+		</button>
+		<div class="dropdown-content">
+			<a id="export-excel-btn" href="#">Експортиране към Excel таблица</a>
+			<a id="export-pdf-btn" href="#">Експортиране към PDF документ</a>
+		</div>
+	</div>
 	<div class="dropdown">
 		<button class="dropbtn">Вид търсене
 			<i class="fa fa-caret-down"></i>
