@@ -29,11 +29,20 @@ window.onload = function() {
     });
 
     document.getElementById("export-excel-btn").addEventListener("click", function() {
-        tableToExcel("main-table", "results")
+        var value = localStorage.getItem("query")
+        ajax("http://localhost:8081/export_excel?phrase_new=" + value + "&phrase_old=" + 
+        convert(value), {}, )
     });
     
     document.getElementById("export-pdf-btn").addEventListener("click", function() {
-        tableToExcel("main-table", "results")
+        var value = localStorage.getItem("query")
+        var type = parseInt(localStorage.getItem("searchType"))
+        
+        if(type == 0) {
+            window.open("http://localhost:8081/export_pdf_ordinary?phrase_new=" + value + "&phrase_old=" + convert(value) + "&from=0&size=10000")
+        } else if(type == 1) {
+            window.open("http://localhost:8081/export_pdf_advanced?phrase_new=" + value + "&phrase_old=" + convert(value) + "&from=0&size=10000")
+        }
     });
 
     $(document).keypress(function(e){
@@ -57,7 +66,6 @@ function sendSearchQuery(from, size, initial=false) {
 }
 
 function sendOrdinarySearchQuery(value, from, size, initial) {
-    ajax("http://localhost:8081/open?path=/home/angel/Desktop/AI/IR/Data/1883-1884/05-06.pdf", {})
     if(initial) {
         ajax("http://localhost:8081/ordinary_search/count?phrase_new=" + value + "&phrase_old=" + 
             convert(value), {}, buildPages)
