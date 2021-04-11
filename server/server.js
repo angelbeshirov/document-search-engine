@@ -5,6 +5,7 @@ const elasticsearch = require("elasticsearch")
 const fileSystem = require('fs')
 const pathModule = require('path');
 const pdfGenerator = require('pdfkit')
+const xl = require('excel4node')
 const app = express()
 
 app.use(bodyParser.json())
@@ -147,6 +148,28 @@ app.get("/export_pdf_advanced", (req, res) => {
     })
 })
 
+app.get("/export_excel_ordinary", (req, res) => {
+    const query = createOrdinarySearchQuery(req)
+    client.search(query)
+    .then(response => {
+        exportExcel(res, response)
+    })
+    .catch(err => {
+        return res.status(500).json({"message": "Error"})
+    })
+})
+
+app.get("/export_excel_advanced", (req, res) => {
+    const query = createAdvancedSearchQuery(req)
+    client.search(query)
+    .then(response => {
+        exportExcel(res, response)
+    })
+    .catch(err => {
+        return res.status(500).json({"message": "Error"})
+    })
+})
+
 function createAdvancedSearchQuery(req) {
     const query_string = req.query['phrase_new']
     const query_string_old = req.query['phrase_old']
@@ -269,5 +292,62 @@ function exportPdf(res, response) {
                 console.log(err)
             }
         })
+    })
+}
+
+function exportExcel(res, response) {
+    var text = response.hits.hits
+
+    let data = [];
+    let i;
+    for (i = 0; i < text.length; i++) {
+        let path = text[i]._source.path
+        let content = text[i].highlight.content[0]
+        data.push({
+            "Файл":path, 
+            "Откъс":content
+        })
+    }
+    console.log(data)
+
+    // create a workbook and worksheet
+    const wb = new xl.Workbook()
+    const ws = wb.addWorksheet("Резултати")
+
+    // define column names
+    const headingColumnNames = [
+        "Файл",
+        "Откъс"
+    ]
+
+    // write column names
+    let headingColumnIndex = 1
+    headingColumnNames.forEach(heading => {
+        ws.cell(1, headingColumnIndex++).string(heading)
+    })
+
+    // write data in excel file
+    let rowIndex = 2
+    data.forEach(record => {
+        let columnIndex = 1
+        Object.keys(record).forEach(columnName => {
+            ws.cell(rowIndex, columnIndex++).string(record[columnName])
+        })
+        rowIndex++
+    })
+
+    // save workbook
+    // wb.write('Results.xlsx')
+    wb.write('Results.xlsx', function(err, stats) {
+        if (err) {
+          console.error(err);
+        } else {
+            var file = pathModule.join('', 'Results.xlsx');
+            res.download(file, function(err) {
+                if (err) {
+                    console.log(err)
+                }
+            })
+        }
     })
 }

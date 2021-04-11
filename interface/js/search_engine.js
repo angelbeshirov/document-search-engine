@@ -30,8 +30,13 @@ window.onload = function() {
 
     document.getElementById("export-excel-btn").addEventListener("click", function() {
         var value = localStorage.getItem("query")
-        ajax("http://localhost:8081/export_excel?phrase_new=" + value + "&phrase_old=" + 
-        convert(value), {}, )
+        var type = parseInt(localStorage.getItem("searchType"))
+        
+        if(type == 0) {
+            window.open("http://localhost:8081/export_excel_ordinary?phrase_new=" + value + "&phrase_old=" + convert(value) + "&from=0&size=10000")
+        } else if(type == 1) {
+            window.open("http://localhost:8081/export_excel_advanced?phrase_new=" + value + "&phrase_old=" + convert(value) + "&from=0&size=10000")
+        }
     });
     
     document.getElementById("export-pdf-btn").addEventListener("click", function() {
