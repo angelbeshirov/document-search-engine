@@ -318,10 +318,18 @@ function exportExcel(res, response) {
         "Откъс"
     ]
 
+    // create style
+    const cellStyle = wb.createStyle({
+        alignment: {
+            wrapText: true,
+            horizontal: 'center'
+        }
+    })
+
     // write column names
     let headingColumnIndex = 1
     headingColumnNames.forEach(heading => {
-        ws.cell(1, headingColumnIndex++).string(heading)
+        ws.cell(1, headingColumnIndex++).string(heading).style(cellStyle)
     })
 
     // write data in excel file
@@ -329,7 +337,7 @@ function exportExcel(res, response) {
     data.forEach(record => {
         let columnIndex = 1
         Object.keys(record).forEach(columnName => {
-            ws.cell(rowIndex, columnIndex++).string(record[columnName])
+            ws.cell(rowIndex, columnIndex++).string(record[columnName]).style(cellStyle)
         })
         rowIndex++
     })
