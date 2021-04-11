@@ -269,8 +269,7 @@ function exportPdf(res, response) {
     for (i = 0; i < text.length; i++) {
         let path = text[i]._source.path
         let content = text[i].highlight.content[0]
-        console.log(path)
-        console.log(content)
+
         theOutput.font('NotoSans')
         theOutput.text(path, {
             underline: true,
@@ -308,7 +307,6 @@ function exportExcel(res, response) {
             "Откъс":content
         })
     }
-    console.log(data)
 
     // create a workbook and worksheet
     const wb = new xl.Workbook()
@@ -342,7 +340,7 @@ function exportExcel(res, response) {
         if (err) {
           console.error(err);
         } else {
-            var file = pathModule.join('', 'Results.xlsx');
+            const file = pathModule.join('', 'Results.xlsx');
             res.download(file, function(err) {
                 if (err) {
                     console.log(err)
