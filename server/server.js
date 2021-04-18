@@ -127,7 +127,7 @@ app.get("/open", (req, res) => {
 })
 
 app.get("/export_pdf_ordinary", (req, res) => {
-    const query = createOrdinarySearchQuery(req)
+    const query = createOrdinarySearchQuery(req, forExport = true)
     client.search(query)
     .then(response => {
         exportPdf(res, response)
@@ -138,7 +138,7 @@ app.get("/export_pdf_ordinary", (req, res) => {
 })
 
 app.get("/export_pdf_advanced", (req, res) => {
-    const query = createAdvancedSearchQuery(req)
+    const query = createAdvancedSearchQuery(req, forExport = true)
     client.search(query)
     .then(response => {
         exportPdf(res, response)
@@ -149,7 +149,7 @@ app.get("/export_pdf_advanced", (req, res) => {
 })
 
 app.get("/export_excel_ordinary", (req, res) => {
-    const query = createOrdinarySearchQuery(req)
+    const query = createOrdinarySearchQuery(req, forExport = true)
     client.search(query)
     .then(response => {
         exportExcel(res, response)
@@ -160,7 +160,7 @@ app.get("/export_excel_ordinary", (req, res) => {
 })
 
 app.get("/export_excel_advanced", (req, res) => {
-    const query = createAdvancedSearchQuery(req)
+    const query = createAdvancedSearchQuery(req, forExport = true)
     client.search(query)
     .then(response => {
         exportExcel(res, response)
@@ -170,7 +170,7 @@ app.get("/export_excel_advanced", (req, res) => {
     })
 })
 
-function createAdvancedSearchQuery(req) {
+function createAdvancedSearchQuery(req, forExport = false) {
     const query_string = req.query['phrase_new']
     const query_string_old = req.query['phrase_old']
     const from = req.query['from']
@@ -198,8 +198,8 @@ function createAdvancedSearchQuery(req) {
                 }
             },
             highlight: {
-                pre_tags: ["<b>"],
-                post_tags: ["</b>"],
+                pre_tags: (forExport ?  [""] : ["<b>"]),
+                post_tags: (forExport ?  [""] : ["</b>"]),
                 order : "score",
                 type : "unified",
                 fields: {
@@ -214,7 +214,7 @@ function createAdvancedSearchQuery(req) {
     return query;
 }
 
-function createOrdinarySearchQuery(req) {
+function createOrdinarySearchQuery(req, forExport = false) {
     const value = req.query['phrase_new']
     const value1 = req.query['phrase_old']
     const from = req.query['from']
@@ -239,8 +239,8 @@ function createOrdinarySearchQuery(req) {
                 }
             },
             highlight: {
-                pre_tags: ["<b>"],
-                post_tags: ["</b>"],
+                pre_tags: (forExport ?  [""] : ["<b>"]),
+                post_tags: (forExport ?  [""] : ["</b>"]),
                 order : "score",
                 type : "unified",
                 fields: {
@@ -260,10 +260,10 @@ function exportPdf(res, response) {
 
     // instantiate the library
     let theOutput = new pdfGenerator 
-    theOutput.registerFont('NotoSans', 'server/fonts/NotoSans-Regular.ttf')
+    theOutput.registerFont('NotoSans', './fonts/NotoSans-Regular.ttf')
     
     // pipe to a writable stream which would save the result into the same directory
-    const stream = theOutput.pipe(fileSystem.createWriteStream('TestDocument.pdf', {encoding: 'utf8'}))
+    const stream = theOutput.pipe(fileSystem.createWriteStream('Резултати.pdf', {encoding: 'utf8'}))
     
     let i;
     for (i = 0; i < text.length; i++) {
@@ -271,19 +271,19 @@ function exportPdf(res, response) {
         let content = text[i].highlight.content[0]
 
         theOutput.font('NotoSans')
-        theOutput.text(path, {
+        theOutput.text('Файл:' + path, {
             underline: true,
             align: 'left'
         })
         theOutput.moveDown(0.5)
-        theOutput.text(content)
+        theOutput.text('Откъс:' + content)
         theOutput.moveDown(1)
     }
                 
     // write out file
     theOutput.end()
             
-    var file = pathModule.join('', 'TestDocument.pdf');
+    var file = pathModule.join('', 'Резултати.pdf');
             
     stream.on('finish', function() {
         res.download(file, function(err) {
@@ -308,9 +308,16 @@ function exportExcel(res, response) {
         })
     }
 
+    var options = {
+        'sheetFormat': {
+            'baseColWidth': 80,
+            'defaultColWidth': 80,
+        }
+    };
+
     // create a workbook and worksheet
     const wb = new xl.Workbook()
-    const ws = wb.addWorksheet("Резултати")
+    const ws = wb.addWorksheet("Резултати", options)
 
     // define column names
     const headingColumnNames = [
@@ -329,6 +336,7 @@ function exportExcel(res, response) {
     // write column names
     let headingColumnIndex = 1
     headingColumnNames.forEach(heading => {
+        // ws.column(headingColumnIndex).width(50)
         ws.cell(1, headingColumnIndex++).string(heading).style(cellStyle)
     })
 
@@ -337,6 +345,7 @@ function exportExcel(res, response) {
     data.forEach(record => {
         let columnIndex = 1
         Object.keys(record).forEach(columnName => {
+            
             ws.cell(rowIndex, columnIndex++).string(record[columnName]).style(cellStyle)
         })
         rowIndex++
@@ -344,11 +353,11 @@ function exportExcel(res, response) {
 
     // save workbook
     // wb.write('Results.xlsx')
-    wb.write('Results.xlsx', function(err, stats) {
+    wb.write('Резултати.xlsx', function(err, stats) {
         if (err) {
           console.error(err);
         } else {
-            const file = pathModule.join('', 'Results.xlsx');
+            const file = pathModule.join('', 'Резултати.xlsx');
             res.download(file, function(err) {
                 if (err) {
                     console.log(err)
