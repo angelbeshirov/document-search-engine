@@ -1,41 +1,21 @@
 from elasticsearch import Elasticsearch
+from config import ConfigManager
+from preprocess import TextProcessor
+
 import os
 import glob
-import PyPDF2
 import pandas as pd
 import codecs   
 from fpdf import FPDF
 import pycpdf
-import argparse
-import regex as re
-
-def clear_hyphens(file):
-    """
-    Clear all hyphens which are a result from word
-    separation on 2 different lines.
-    """
-    # по- красив -> по-красив
-    file = re.sub('(по-)([\s]*[\r\n]*)([а-яА-Я])', '\\1\\3', file)
-    # най- красив -> най-красив
-    file = re.sub('(най-)([\s]*[\r\n]*)([а-яА-Я])', '\\1\\3', file)
-    # стру- ва -> струва
-    return re.sub('([а-яА-Я])(-[\s]+)([а-яА-Я])', '\\1\\3', file)
-
-def clean(file):
-    """
-    Clear up the pages.
-    """
-    # изтриване на част от страниците
-    file = re.sub('-[\s][0-9]+[\s]-[\s]*', '', file)
-    file = clear_hyphens(file)
-    return file
     
-def extract_and_index(files):
+def extract_and_index(files, config_manager):
     """
     Extracts the contentes of the pdf files, clears it up
     and passes it to Elastic for indexing.
     """
-    es = Elasticsearch()
+    es = Elasticsearch([config_manager.get_address()])
+    processor = TextProcessor()
     
     for file in files:
         print("Indexing document {}".format(file))
@@ -50,13 +30,18 @@ def extract_and_index(files):
             this_text = page_object.text.translate(pycpdf.unicode_translations)
             document_content += this_text
         
-        document_content = clean(document_content)
+        document_content = processor.process(document_content)
+        print(document_content)
 
         body = {}
-        body["path"] = os.path.abspath(file)
+
+        # Change accordingly
+        temp = os.path.abspath(file).split('/')[-3:]
+        path = "/home/ec2-user/" + '/'.join(temp)
+        body["path"] = path #os.path.abspath(file)
         body["content"] = document_content
 
-        es.index(index = 'library_index', body = body)
+        #es.index(index = 'library_index', body = body)
 
 def get_files_to_index(root_path):
     """
@@ -73,18 +58,14 @@ def get_files_to_index(root_path):
     return files_to_index
 
 def main():
-    # parameters used for starting this class from shell scripts and executing different flows with different paremeters
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-p", "--path", type=str, default=".", help="Path to the directory with the files to index.")
-    args = parser.parse_args()
+    config = ConfigManager()
 
-    path = args.path
-    files = get_files_to_index(path)
+    files = get_files_to_index(config.get_path())
 
     for file in files:
         print(os.path.abspath(file))
 
-    extract_and_index(files)
+    extract_and_index(files, config)
     
 if __name__ == '__main__':
     main()

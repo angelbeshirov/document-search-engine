@@ -1,6 +1,5 @@
 #!/bin/bash
 
-root_path="/home/angel/Desktop/AI/IR/Data"
+root_path="/home/angel/Desktop/AI/IR/data/1883-1884"
 
-python index_files.py \
-                 --path="$root_path"
+python index_files.py

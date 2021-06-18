@@ -20,6 +20,7 @@ const client = elasticsearch.Client({
 
 // Add headers
 app.use(function (req, res, next) {
+    
     res.setHeader('Access-Control-Allow-Origin', 'http://127.0.0.1:8080');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
@@ -271,12 +272,12 @@ function exportPdf(res, response) {
         let content = text[i].highlight.content[0]
 
         theOutput.font('NotoSans')
-        theOutput.text('Файл:' + path, {
+        theOutput.text('Файл: ' + path, {
             underline: true,
             align: 'left'
         })
         theOutput.moveDown(0.5)
-        theOutput.text('Откъс:' + content)
+        theOutput.text('Откъс: ' + content)
         theOutput.moveDown(1)
     }
                 
