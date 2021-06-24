@@ -20,7 +20,8 @@ class TextProcessor:
         Clear up the pages.
         """
         # изтриване на част от страниците
-        return re.sub('-[\s][0-9]+[\s]-[\s]*', '', file)
+        file = re.sub('-[\s][0-9]+[\s]-[\s]*', '', file)
+        return re.sub('[Сс][ГгТт][Рр]\.[\s]*[1-9][0-9]*[\.]*', '', file)
 
     def process(self, text):
         text = self.clear_pages(text)
