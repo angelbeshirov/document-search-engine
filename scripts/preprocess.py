@@ -9,17 +9,17 @@ class TextProcessor:
         self.clada_dictionary = set(line.strip() \
                                     for line in open(config.get_dictionary(), encoding='utf-16', mode="r"))
 
-    def clear_hyphens(self, text):
-        """
-        Clear all hyphens which are a result from word
-        separation on 2 different lines.
-        """
-        """ по- красив -> по-красив """
-        text = re.sub('(по-)([\s]*[\r\n]*)([а-яА-Я])', '\\1\\3', text)
-        """ най- красив -> най-красив """
-        text = re.sub('(най-)([\s]*[\r\n]*)([а-яА-Я])', '\\1\\3', text)
-        """ стру- ва -> струва """
-        return re.sub('([а-яА-Я])(-[\s]+)([а-яА-Я])', '\\1\\3', text)
+    # def clear_hyphens(self, text):
+    #     """
+    #     Clear all hyphens which are a result from word
+    #     separation on 2 different lines.
+    #     """
+    #     """ по- красив -> по-красив """
+    #     text = re.sub('(по-)([\s]*[\r\n]*)([а-яА-Я])', '\\1\\3', text)
+    #     """ най- красив -> най-красив """
+    #     text = re.sub('(най-)([\s]*[\r\n]*)([а-яА-Я])', '\\1\\3', text)
+    #     """ стру- ва -> струва """
+    #     return re.sub('([а-яА-Я])(-[\s]+)([а-яА-Я])', '\\1\\3', text)
 
     def clear_pages(self, file):
         """
@@ -52,7 +52,15 @@ class TextProcessor:
 
     def process(self, text):
         text = self.clear_pages(text)
-        text = self.clear_hyphens(text)
+        # text = self.clear_hyphens(text)
         text = self.correct_words_with_hyphens(text)
 
         return text
+        
+# def main():
+#     processor = TextProcessor()
+#     print(processor.process('по- добре'))
+
+
+# if __name__ == '__main__':
+#     main()

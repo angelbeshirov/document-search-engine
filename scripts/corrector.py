@@ -5,18 +5,22 @@ import Levenshtein
 import pickle
 import csv
 import re
+import os
 from config import ConfigManager
 
 
-class Corrector:  # 'dictionary/CLADABG-MODEL.txt'
+class Corrector:
 
     def __init__(self, config = ConfigManager()):
         self.tokenizer = WordPunctTokenizer() # Tokenizer 
         self.clada_dictionary = set(line.strip()\
             for line in open(config.get_dictionary(), encoding = 'utf-16', mode = "r"))
-            # for line in open('dictionary/all-cyrillic.txt', encoding = 'utf-8', mode = "r"))
             
-        # self.learned_dictionary = self.load_learned_dictionary('dictionary/learned_dictionary.pickle')
+        self.learned_dictionary = dict()
+
+        if os.path.isfile("dictionary/learned_dictionary.pickle"):
+            with open('dictionary/learned_dictionary.pickle', "rb") as learned_dict_file:
+                self.learned_dictionary = pickle.load(learned_dict_file)
 
         with open('dictionary/count_dictionary.pickle', "rb") as input_file:
             self.count_dictionary = pickle.load(input_file)
@@ -26,11 +30,8 @@ class Corrector:  # 'dictionary/CLADABG-MODEL.txt'
         header = ['Файл', 'Страница', 'Позиция', 'Контекст', 'Сгрешен OCR' , 'Предложения за поправка', 'Поправен OCR']
 
         f = open('suggestions.csv', 'w', encoding='UTF16')
-        f1 = open('suggestions1edit.csv', 'w', encoding='UTF16')
         self.writer = csv.writer(f)
-        self.writer1 = csv.writer(f1)
         self.writer.writerow(header)
-        self.writer1.writerow(header)
 
     def correct(self, entry):
         """
@@ -55,13 +56,17 @@ class Corrector:  # 'dictionary/CLADABG-MODEL.txt'
             if corrected_token is None:
                 # Get suggestions of edit distance 2, sort them on probability and get the top 5
                 suggestions = self.candidates_edits2(token)
+
+                if token in self.learned_dictionary:
+                    suggestions.insert(0, self.learned_dictionary[token])
+                    
                 if len(suggestions) > 0:
                     sorted_suggestions = sorted(suggestions, key=lambda token: self.probability(token, self.total))[:5]
                     
                     suggestions = ' | '.join(sorted_suggestions).strip()
                     self.writer.writerow([entry_doc, entry_page, i, self.get_context(i, tokenized_text), token, suggestions, ''])
             else:
-                self.writer1.writerow([entry_doc, entry_page, i, self.get_context(i, tokenized_text), token, corrected_token, ''])
+                self.writer.writerow([entry_doc, entry_page, i, self.get_context(i, tokenized_text), token, corrected_token, ''])
                 tokenized_text[i] = corrected_token
 
     def get_context(self, i, tokenized_text):
@@ -90,9 +95,6 @@ class Corrector:  # 'dictionary/CLADABG-MODEL.txt'
         return self.join_tokenized_text(context)
 
     def autocorrect(self, token):
-        # if self.is_in_learned_dict(token):
-        #     return self.learned_dict[token]
-
         candidates = self.candidates_edits1(token)
 
         if len(candidates) > 0:
@@ -115,22 +117,6 @@ class Corrector:  # 'dictionary/CLADABG-MODEL.txt'
 
     def check_clada_dict(self, token):
         return True if token in self.clada_dictionary else False
-
-    def check_learned_dict(self, token):
-        return True if token in self.learned_dict else False
-
-    def load_learned_dictionary(self, path):
-        with open(path) as f:
-            data = f.read()
-
-        return json.loads(data)
-
-    def calculate_levenshtein_distance(self, token, alt_spellings):
-        '''Calculate Levenshtein distance of alternative spellings to error.'''
-        distances = {}
-        for spelling in alt_spellings:
-            distances[spelling] = Levenshtein.distance(token, spelling)
-        return distances
 
     def probability(self, word, total):
         """Probability of `word`."""
@@ -156,10 +142,10 @@ class Corrector:  # 'dictionary/CLADABG-MODEL.txt'
         return set(w for w in words if w in self.clada_dictionary)
 
     def candidates_edits1(self, word):
-        return set(self.known(self.edits1(word)))
+        return list(self.known(self.edits1(word)))
 
     def candidates_edits2(self, word):
-        return set(self.known(self.edits2(word)))
+        return list(self.known(self.edits2(word)))
 
 
     def join_tokenized_text(self, tokenized_text):

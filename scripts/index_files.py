@@ -32,7 +32,6 @@ def extract_and_index(files, config_manager):
             document_content += this_text
         
         document_content = processor.process(document_content)
-        print(document_content)
 
         body = {}
 
@@ -42,7 +41,7 @@ def extract_and_index(files, config_manager):
         body["path"] = path #os.path.abspath(file)
         body["content"] = document_content
 
-        #es.index(index = 'library_index', body = body)
+        es.index(index = 'library_index', body = body)
 
 def get_files_to_index(root_path):
     """
@@ -66,8 +65,7 @@ def main():
     for file in files:
         print(os.path.abspath(file))
 
-    # extract_and_index(files, config)
-    corrector = Corrector()
+    extract_and_index(files, config)
     
 if __name__ == '__main__':
     main()

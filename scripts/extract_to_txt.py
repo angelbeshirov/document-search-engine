@@ -17,7 +17,6 @@ class Extractor:
         self.tokenizer = WordPunctTokenizer()
         self.clada_dictionary = set(line.strip()\
             for line in open(config.get_dictionary(), encoding = 'utf-16', mode = "r"))
-            # for line in open('dictionary/all-cyrillic.txt', encoding = 'utf-8', mode = "r"))
     
     def extract(self, files):
         """
